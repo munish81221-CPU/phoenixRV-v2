@@ -1,0 +1,14 @@
+# Simulation outputs
+*.vcd
+*.vvp
+
+# Simulation executables
+sim*
+
+# Temporary files
+*.log
+*.tmp
+
+# OS/editor files
+Thumbs.db
+*.swp
