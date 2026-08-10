@@ -4,8 +4,8 @@
 
 | Module ID | Module | RTL Path | Testbench | Status |
 |-----------|--------|----------|-----------|--------|
-| COM-001 | `phx_common_mux2` | `rtl/comman/phx_common_mux2.v` | `tb/comman/phx_common_mux2_tb.v` | Verified |
-| COM-002 | `phx_common_mux4` | `rtl/comman/phx_common_mux4.v` | `tb/comman/phx_common_mux4_tb.v` | Verified |
+| COM-001 | `phx_common_mux2` | `rtl/common/phx_common_mux2.v` | `tb/common/phx_common_mux2_tb.v` | Verified |
+| COM-002 | `phx_common_mux4` | `rtl/common/phx_common_mux4.v` | `tb/common/phx_common_mux4_tb.v` | Verified |
 
 ## 2. Datapath Modules
 
