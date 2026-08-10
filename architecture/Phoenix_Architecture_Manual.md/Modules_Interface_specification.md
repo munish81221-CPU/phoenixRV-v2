@@ -82,3 +82,48 @@ The module was verified using a self-checking testbench with
 four functional selection cases. All four tests passed.
 
 Waveform inspection in GTKWave also confirmed correct MUX behavior.
+
+
+
+
+
+### 1.3 `phx_common_adder`
+
+### Purpose
+
+`phx_common_adder` is a parameterized binary adder based on a
+parallel-prefix Kogge-Stone carry network. It computes the sum of
+two WIDTH-bit operands with an input carry.
+
+### Parameters
+
+| Parameter | Default | Description                         |
+| --------- | ------: | ----------------------------------- |
+| WIDTH     |      32 | Width of the input and output buses |
+
+### Interface
+
+| Signal   | Direction | Width | Description     |
+| -------- | --------- | ----: | --------------- |
+| add_in0  | Input     | WIDTH | First operand   |
+| add_in1  | Input     | WIDTH | Second operand  |
+| cin      | Input     |     1 | Input carry     |
+| sum      | Output    | WIDTH | Addition result |
+| cout     | Output    |     1 | Output carry    |
+
+### RTL Behavior
+
+The module computes the binary addition of `add_in0`, `add_in1`, and
+`cin`.
+
+The carry signals are calculated using a parallel-prefix Kogge-Stone
+carry network.
+
+The module is purely combinational and does not require a clock.
+
+### Verification
+
+The module was verified using a self-checking testbench with five
+directed test cases and 1000 random test vectors. All 1005 tests passed.
+
+Waveform inspection in GTKWave also confirmed correct adder behavior.
