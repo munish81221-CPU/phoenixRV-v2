@@ -127,3 +127,51 @@ The module was verified using a self-checking testbench with five
 directed test cases and 1000 random test vectors. All 1005 tests passed.
 
 Waveform inspection in GTKWave also confirmed correct adder behavior.
+
+### 1.4 `phx_common_add_sub`
+
+### Purpose
+
+`phx_common_add_sub` is a parameterized combinational arithmetic
+module that performs addition or subtraction using a shared
+Kogge-Stone adder.
+
+### Parameters
+
+| Parameter | Default | Description                         |
+| --------- | ------: | ----------------------------------- |
+| WIDTH     |      32 | Width of the input and output buses |
+
+### Interface
+
+| Signal  | Direction | Width | Description |
+| ------- | --------- | ----: | ----------- |
+| add_in0 | Input     | WIDTH | First operand |
+| add_in1 | Input     | WIDTH | Second operand |
+| sel     | Input     | 1 | Operation select |
+| result  | Output    | WIDTH | Arithmetic result |
+| cout    | Output    | 1 | Carry/borrow indication |
+
+### RTL Behavior
+
+When `sel = 0`, the module performs:
+
+`add_in0 + add_in1`
+
+When `sel = 1`, the module performs subtraction using two's-complement
+arithmetic:
+
+`add_in0 + ~add_in1 + 1`
+
+The module reuses `phx_common_adder` as the underlying Kogge-Stone
+arithmetic engine.
+
+The module is purely combinational and does not require a clock.
+
+### Verification
+
+The module was verified using a self-checking testbench with nine
+directed test cases and 1000 random test vectors. All 1009 tests passed.
+
+Waveform inspection in GTKWave also confirmed correct addition,
+subtraction, and carry/borrow behavior.
