@@ -175,3 +175,60 @@ directed test cases and 1000 random test vectors. All 1009 tests passed.
 
 Waveform inspection in GTKWave also confirmed correct addition,
 subtraction, and carry/borrow behavior.
+
+### 1.5 `phx_common_comparator`
+
+### Purpose
+
+`phx_common_comparator` is a parameterized combinational comparison
+module used to compare two WIDTH-bit operands. It supports both
+unsigned and signed comparison modes.
+
+### Parameters
+
+| Parameter | Default | Description                         |
+| --------- | ------: | ----------------------------------- |
+| WIDTH     |      32 | Width of the input operand buses    |
+
+### Interface
+
+| Signal      | Direction | Width | Description |
+| ----------- | --------- | ----: | ----------- |
+| add_in0     | Input     | WIDTH | First operand |
+| add_in1     | Input     | WIDTH | Second operand |
+| signed_mode | Input     | 1 | Selects signed or unsigned comparison |
+| eq          | Output    | 1 | Asserted when operands are equal |
+| lt          | Output    | 1 | Asserted when add_in0 is less than add_in1 |
+| gt          | Output    | 1 | Asserted when add_in0 is greater than add_in1 |
+
+### RTL Behavior
+
+The module first determines bit-wise equality between the two
+operands.
+
+The comparison network evaluates the operands from the most
+significant bit toward the least significant bit. The first
+different bit determines the unsigned comparison result.
+
+When `signed_mode = 0`, the module performs unsigned comparison.
+
+When `signed_mode = 1`, the module performs signed two's-complement
+comparison. The sign bits are evaluated first, while operands having
+the same sign use the unsigned comparison ordering.
+
+The module generates three mutually exclusive comparison outputs:
+
+- `eq = 1` when `add_in0 == add_in1`
+- `lt = 1` when `add_in0 < add_in1`
+- `gt = 1` when `add_in0 > add_in1`
+
+The module is purely combinational and does not require a clock.
+
+### Verification
+
+The module was verified using a self-checking testbench with
+11 directed test cases and 1000 random test vectors covering both
+signed and unsigned comparison modes. All 1011 tests passed.
+
+Waveform inspection in GTKWave also confirmed correct equality,
+less-than, greater-than, signed, and unsigned comparison behavior.
