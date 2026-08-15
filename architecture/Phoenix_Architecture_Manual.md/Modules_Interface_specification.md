@@ -277,7 +277,7 @@ Stage 1 → 2 bits
 Stage 2 → 4 bits
 Stage 3 → 8 bits
 Stage 4 → 16 bits
-
+```
 
 ### Verification
 
