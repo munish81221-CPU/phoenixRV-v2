@@ -232,3 +232,71 @@ signed and unsigned comparison modes. All 1011 tests passed.
 
 Waveform inspection in GTKWave also confirmed correct equality,
 less-than, greater-than, signed, and unsigned comparison behavior.
+
+### 1.6 `phx_common_shifter`
+
+### Purpose
+
+`phx_common_shifter` is a parameterized combinational barrel shifter designed to perform logical left shift, logical right shift, and arithmetic right shift operations on a WIDTH-bit data bus.
+
+The shifter uses a multi-stage barrel-shifter structure, where each stage can shift the data by a power-of-two distance.
+
+### Parameters
+
+| Parameter | Default | Description |
+| --------- | ------: | ----------- |
+| WIDTH     |      32 | Width of the input and output data buses |
+
+### Interface
+
+| Signal | Direction | Width | Description |
+| ------ | --------- | ----: | ----------- |
+| data_in | Input | WIDTH | Input data to be shifted |
+| shift_amount | Input | `$clog2(WIDTH)` | Amount by which the input data is shifted |
+| operation | Input | 2 | Selects the shift operation |
+| shift_out | Output | WIDTH | Shifted output data |
+
+### Operation Encoding
+
+| `operation` | Operation | Description |
+| ----------- | --------- | ----------- |
+| `2'b00` | SLL | Shift Left Logical |
+| `2'b01` | SRL | Shift Right Logical |
+| `2'b10` | SRA | Shift Right Arithmetic |
+| `2'b11` | Reserved | Reserved for future use |
+
+### RTL Behavior
+
+The barrel-shifter network consists of `$clog2(WIDTH)` stages.
+
+For the default `WIDTH = 32`, the five stages perform shifts of:
+
+```text
+Stage 0 → 1 bit
+Stage 1 → 2 bits
+Stage 2 → 4 bits
+Stage 3 → 8 bits
+Stage 4 → 16 bits
+
+
+### Verification
+
+The module was verified using a self-checking testbench with directed
+and random test cases.
+
+The testbench verified all three supported operations:
+
+- SLL (Shift Left Logical)
+- SRL (Shift Right Logical)
+- SRA (Shift Right Arithmetic)
+
+The verification also covered zero-shift operation, different shift
+amounts, sign extension for arithmetic right shifts, and multi-stage
+barrel-shifter operation.
+
+A total of 515 test cases were executed, and all 515 tests passed with
+zero failures.
+
+Waveform inspection in GTKWave also confirmed correct shifter behavior
+and verified the expected data propagation through the barrel-shifter
+stages.
