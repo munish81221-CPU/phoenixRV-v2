@@ -142,7 +142,7 @@ initial begin
     failed_count_16 = 0;
 
 
-    $dumpfile("phx_common_signext_tb.vcd");
+    $dumpfile("sim/phx_common_signext_tb.vcd");
     $dumpvars(0,phx_common_signext_tb);
 
 //positive values 

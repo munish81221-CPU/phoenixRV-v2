@@ -10,6 +10,7 @@
 | COM-004 | `phx_common_add_sub` | `rtl/common/phx_common_add_sub.v` | `tb/common/phx_common_add_sub_tb.v` | Verified |
 | COM-005 | `phx_common_comparator` | `rtl/common/phx_common_comparator.v` | `tb/common/phx_common_comparator_tb.v` | Verified |
 | COM-006 | `phx_common_shifter` | `rtl/common/phx_common_shifter.v` | `tb/common/phx_common_shifter_tb.v` | Verified |
+| COM-006 | `phx_common_signext` | `rtl/common/phx_common_signext.v` | `tb/common/phx_common_signext_tb.v` | Verified |
 
 
 ## 2. Datapath Modules

@@ -300,3 +300,51 @@ zero failures.
 Waveform inspection in GTKWave also confirmed correct shifter behavior
 and verified the expected data propagation through the barrel-shifter
 stages.
+
+### 1.7 `phx_common_signext`
+
+### Purpose
+
+`phx_common_signext` is a parameterized combinational sign-extension module used to expand a smaller signed value to a larger datapath width while preserving its numerical value.
+
+The module preserves the original input bits and fills the newly added upper bits with copies of the input sign bit (MSB).
+
+### Parameters
+
+| Parameter | Default | Description |
+| --------- | ------: | ----------- |
+| IN_WIDTH  |       8 | Width of the input data |
+| OUT_WIDTH |      32 | Width of the output data |
+
+`IN_WIDTH` must be less than or equal to `OUT_WIDTH`.
+
+### Interface
+
+| Signal | Direction | Width | Description |
+| ------ | --------- | ----: | ----------- |
+| data_in | Input | IN_WIDTH | Input signed value to be extended |
+| data_out | Output | OUT_WIDTH | Sign-extended output value |
+
+### RTL Behavior
+
+The module is purely combinational and does not require a clock.
+
+The number of newly generated upper bits is:
+
+```text
+OUT_WIDTH - IN_WIDTH
+```
+
+### verification
+
+The module was verified using a self-checking testbench containing directed test cases across three parameterized configurations.
+
+The verification covered:
+
+- 8 → 32-bit sign extension: 11 tests passed, 0 failed
+- 5 → 32-bit sign extension: 4 tests passed, 0 failed
+- 16 → 32-bit sign extension: 4 tests passed, 0 failed
+
+A total of **19 tests were executed, and all 19 tests passed with zero failures**.
+
+GTKWave waveform inspection was also completed successfully. The waveforms confirmed correct replication of the input MSB into the newly added upper bits and preservation of the original input bits for all tested parameterized configurations.
