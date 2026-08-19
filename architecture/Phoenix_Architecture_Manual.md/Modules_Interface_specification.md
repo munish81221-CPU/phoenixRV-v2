@@ -348,3 +348,51 @@ The verification covered:
 A total of **19 tests were executed, and all 19 tests passed with zero failures**.
 
 GTKWave waveform inspection was also completed successfully. The waveforms confirmed correct replication of the input MSB into the newly added upper bits and preservation of the original input bits for all tested parameterized configurations.
+
+### 1.8 `phx_common_mux`
+
+### Purpose
+
+`phx_common_mux` is a parameterized combinational multiplexer used to select one data word from multiple input data words and forward the selected value to the output.
+
+The module supports configurable data width and number of input channels.
+
+### Parameters
+
+| Parameter | Default | Description |
+| --------- | ------: | ----------- |
+| WIDTH     |      32 | Width of each input and output data word |
+| INPUTS    |       4 | Number of input data words |
+
+For the default configuration, the module operates as a 4:1 multiplexer with 32-bit data inputs.
+
+### Interface
+
+| Signal | Direction | Width | Description |
+| ------ | --------- | ----: | ----------- |
+| input_data | Input | `WIDTH × INPUTS` | Array of input data words |
+| sel | Input | `$clog2(INPUTS)` | Selects which input data word is forwarded |
+| mux_out | Output | `WIDTH` | Selected input data word |
+
+### Selection Behavior
+
+For the default `INPUTS = 4` configuration:
+
+| `sel` | Selected Input | `mux_out` |
+| ----- | -------------- | --------- |
+| `2'b00` | `input_data[0]` | `input_data[0]` |
+| `2'b01` | `input_data[1]` | `input_data[1]` |
+| `2'b10` | `input_data[2]` | `input_data[2]` |
+| `2'b11` | `input_data[3]` | `input_data[3]` |
+
+### RTL Behavior
+
+The MUX is implemented using an indexed input array.
+
+The selected input is directly assigned to the output:
+
+```text
+mux_out = input_data[sel]
+```
+### verification
+in total 8 direct and 200 random test were applied and all passed succesfully . GTK wave outcone are verified succesfully and module if fully verified and tested.
