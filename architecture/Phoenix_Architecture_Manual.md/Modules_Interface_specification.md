@@ -396,3 +396,53 @@ mux_out = input_data[sel]
 ```
 ### verification
 in total 8 direct and 200 random test were applied and all passed succesfully . GTK wave outcone are verified succesfully and module if fully verified and tested.
+
+### 1.9 `phx_common_decoder`
+
+### Purpose
+
+`phx_common_decoder` is a parameterized combinational decoder that converts an encoded binary input into a one-hot output.
+
+For an `INPUT_WIDTH`-bit input, the decoder generates `2^INPUT_WIDTH` output lines. For each input combination, exactly one output line is asserted.
+
+The module is designed as a reusable control-logic building block for PhoenixRV.
+
+### Parameters
+
+| Parameter | Default | Description |
+| --------- | ------: | ----------- |
+| INPUT_WIDTH | 2 | Width of the encoded input |
+
+The number of decoder output lines is derived as:
+
+```text
+OUTPUTS = 2^INPUT_WIDTH
+```
+### interface
+| Signal | Direction | Width | Description |
+| ------ | --------- | ----: | ----------- |
+| sel   | Input | `INPUT_WIDTH` | Encoded input used to select the active output|
+|decoder| output| `2^INPUT_WIDTH` | one-hot decoded output|
+
+### RTL behaviour
+### RTL Behavior
+
+`phx_common_decoder` is implemented as purely combinational logic using a left-shift operation.
+
+The RTL starts with a single logic `1` and shifts it left by the value of `sel`:
+
+```text
+decoded = 1'b1 << sel
+```
+### verification
+The module was verified using a self-checking testbench with exhaustive directed testing.
+
+The verification covered every possible input state for each parameterized configuration:
+
+2 → 4 decoder: 4 tests
+3 → 8 decoder: 8 tests
+4 → 16 decoder: 16 tests
+
+A total of 28 tests were executed, and all 28 tests passed with zero failures.
+
+GTKWave waveform inspection was also completed successfully. The waveforms confirmed correct one-hot output generation for all tested input combinations and parameterized decoder configurations.
