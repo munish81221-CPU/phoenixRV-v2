@@ -446,3 +446,60 @@ The verification covered every possible input state for each parameterized confi
 A total of 28 tests were executed, and all 28 tests passed with zero failures.
 
 GTKWave waveform inspection was also completed successfully. The waveforms confirmed correct one-hot output generation for all tested input combinations and parameterized decoder configurations.
+
+### 1.10 `phx_common_priority_encoder`
+
+### Purpose
+
+`phx_common_priority_encoder` is a parameterized combinational priority encoder that converts multiple input request lines into a binary encoded output.
+
+The module assigns priority according to the input index, with the highest-numbered input having the highest priority.
+
+If multiple input bits are active at the same time, only the highest-priority active input is encoded.
+
+A `valid` output indicates whether any input is active.
+
+### Parameters
+
+| Parameter | Default | Description |
+| --------- | ------: | ----------- |
+| INPUT | 8 | Number of input lines |
+
+The encoded output width is derived using:
+
+```text
+$clog2(INPUT)
+```
+### RTL Specification
+
+`phx_common_priority_encoder` is implemented as a purely combinational priority encoder.
+
+The RTL uses a descending `for` loop to examine the input lines from the highest-priority index to the lowest-priority index.
+
+For the default configuration:
+
+```text
+INPUT = 8
+Priority order: 7 → 6 → 5 → 4 → 3 → 2 → 1 → 0
+```
+
+
+### Verification
+
+The module was verified using a self-checking testbench.
+
+Verification included:
+
+- All-zero input condition
+- Individual activation of each input
+- Multiple simultaneously active inputs
+- Highest-priority input selection
+- Lowest-priority input selection
+- All inputs active
+- Complete input-space verification
+
+For the default `INPUT = 8` configuration, the total number of possible input combinations is:
+
+```text
+2^8 = 256
+```
