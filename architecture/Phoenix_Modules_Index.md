@@ -10,10 +10,11 @@
 | COM-004 | `phx_common_add_sub` | `rtl/common/phx_common_add_sub.v` | `tb/common/phx_common_add_sub_tb.v` | Verified |
 | COM-005 | `phx_common_comparator` | `rtl/common/phx_common_comparator.v` | `tb/common/phx_common_comparator_tb.v` | Verified |
 | COM-006 | `phx_common_shifter` | `rtl/common/phx_common_shifter.v` | `tb/common/phx_common_shifter_tb.v` | Verified |
-| COM-006 | `phx_common_signext` | `rtl/common/phx_common_signext.v` | `tb/common/phx_common_signext_tb.v` | Verified |
-| COM-007 | `phx_common_mux` | `rtl/common/phx_common_mux.v` | `tb/common/phx_common_mux_tb.v` | Verified |
-| COM-007 | `phx_common_decoder` | `rtl/common/phx_common_decoder.v` | `tb/common/phx_common_decoder_tb.v` | Verified |
-| COM-007 | `phx_common_priority_encoder` | `rtl/common/phx_common_priority_encoder.v` | `tb/common/phx_common_priority_encoder_tb.v` | Verified |
+| COM-007 | `phx_common_signext` | `rtl/common/phx_common_signext.v` | `tb/common/phx_common_signext_tb.v` | Verified |
+| COM-008 | `phx_common_mux` | `rtl/common/phx_common_mux.v` | `tb/common/phx_common_mux_tb.v` | Verified |
+| COM-009 | `phx_common_decoder` | `rtl/common/phx_common_decoder.v` | `tb/common/phx_common_decoder_tb.v` | Verified |
+| COM-010 | `phx_common_priority_encoder` | `rtl/common/phx_common_priority_encoder.v` | `tb/common/phx_common_priority_encoder_tb.v` | Verified |
+| COM-011 | `phx_common_register_file` | `rtl/common/phx_common_register_fule.v` | `tb/common/phx_common_register_file_tb.v` | Verified |
 
 ## 2. Datapath Modules
 

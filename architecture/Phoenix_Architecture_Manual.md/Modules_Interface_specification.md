@@ -503,3 +503,96 @@ For the default `INPUT = 8` configuration, the total number of possible input co
 ```text
 2^8 = 256
 ```
+### 1.11 `phx_common_register_file`
+
+### Purpose
+
+`phx_common_register_file` provides the register storage required by the PhoenixRV datapath.
+
+The module implements a parameterized register file with two independent read ports and one write port. Register reads are combinational, while register writes occur synchronously with the clock.
+
+The default configuration contains 32 registers, each 32 bits wide.
+
+### Parameters
+
+| Parameter | Default | Description |
+| --------- | ------: | ----------- |
+| DATA_WIDTH | 32 | Width of each register |
+| REG_COUNT | 32 | Number of registers |
+
+The register address width is derived using:
+
+```text
+$clog2(REG_COUNT)
+```
+
+### One important point
+
+I deliberately wrote the documentation around the **actual RTL behavior we finalized**:
+
+```text
+2 read ports
+1 write port
+32 × 32 default
+x0 protection
+combinational reads
+clocked writes
+write-through
+```
+### RTL Behavior
+
+`phx_common_register_file` is a parameterized register file with two combinational read ports and one synchronous write port.
+
+The default configuration contains 32 registers, each 32 bits wide.
+
+The register storage is implemented as:
+
+```text
+registers[0:REG_COUNT-1]
+```
+### Port Interface
+
+| Port | Direction | Width | Function |
+|---|---|---:|---|
+| `clk` | Input | 1 bit | Clock signal. Register write operations occur on the positive edge of this clock. |
+| `reset` | Input | 1 bit | Clears the register file when asserted. |
+| `rs1` | Input | 5 bits* | Selects the register to be read through the first read port. |
+| `rs2` | Input | 5 bits* | Selects the register to be read through the second read port. |
+| `rd` | Input | 5 bits* | Selects the destination register for a write operation. |
+| `write_data` | Input | 32 bits* | Data that is written into the selected register. |
+| `write_enable` | Input | 1 bit | Enables the write operation when asserted. |
+| `read_data1` | Output | 32 bits* | Provides the data stored in the register selected by `rs1`. |
+| `read_data2` | Output | 32 bits* | Provides the data stored in the register selected by `rs2`. |
+
+\* Width is parameterized and depends on `DATA_WIDTH` and `REG_COUNT`.
+
+### Verification
+
+The `phx_common_register_file` module was verified using a self-checking testbench containing directed tests and randomized read/write transactions.
+
+The verification covered:
+
+- Register file reset behavior
+- Basic register write and read operations
+- Register overwrite operation
+- Simultaneous operation of both read ports
+- Reading the same register through both read ports
+- x0 read behavior
+- Attempted write to x0
+- Write-through behavior on read port 1
+- Write-through behavior on read port 2
+- Write-through when both read ports select the register being written
+- Randomized register addresses
+- Randomized write data
+- Randomized write enable
+- Sequential read/write transactions
+
+An independent reference register array was maintained in the testbench to calculate the expected register contents and read outputs. This allowed the DUT outputs to be compared against an independent expected model.
+
+The final simulation result was:
+
+```text
+Total Tests : 511
+Passed      : 511
+Failed      : 0
+```
