@@ -596,3 +596,115 @@ Total Tests : 511
 Passed      : 511
 Failed      : 0
 ```
+### COM-012 — Immediate Generator
+
+#### Module Name
+
+`phx_common_imm_gen`
+
+#### Purpose
+
+The `phx_common_imm_gen` module generates a 32-bit immediate value from a 32-bit RISC-V instruction.
+
+RISC-V uses different instruction formats in which the immediate bits are arranged differently. The Immediate Generator extracts, rearranges, and extends these bits to produce a consistent 32-bit immediate output.
+
+The supported immediate formats are:
+
+- I-type
+- S-type
+- B-type
+- U-type
+- J-type
+
+The module is purely combinational and does not require a clock or reset signal.
+
+---
+
+### Module Interface Specification
+
+#### Port Interface
+
+| Port | Direction | Width | Function |
+|---|---|---:|---|
+| `instruction` | Input | 32 bits | 32-bit RISC-V instruction from which the immediate value is extracted. |
+| `imm_type` | Input | 3 bits | Selects the immediate format to be generated. |
+| `immediate` | Output | 32 bits | Generated 32-bit immediate value corresponding to the selected instruction format. |
+
+#### Immediate Type Encoding
+
+| `imm_type` | Format | Description |
+|---|---|---|
+| `3'b000` | I-type | 12-bit immediate from `instruction[31:20]`, sign extended to 32 bits. |
+| `3'b001` | S-type | Immediate reconstructed from `instruction[31:25]` and `instruction[11:7]`, then sign extended. |
+| `3'b010` | B-type | Branch immediate reconstructed from separated instruction fields and sign extended. |
+| `3'b011` | U-type | Upper 20 instruction bits followed by 12 zero bits. |
+| `3'b100` | J-type | Jump immediate reconstructed from separated instruction fields and sign extended. |
+| Other | Invalid | Output is set to zero. |
+
+---
+
+### RTL Behavior
+
+The module is implemented as a combinational RTL block using an `always @(*)` block and a `case` statement based on `imm_type`.
+
+The output is given a default value of zero before format selection. This ensures deterministic behavior for unsupported immediate types.
+
+```text
+instruction[31:0]
+       │
+       │
+       ▼
+┌─────────────────────┐
+│ Immediate Generator │
+│                     │
+│   imm_type[2:0]     │
+└──────────┬──────────┘
+           │
+           ▼
+     immediate[31:0]
+
+```
+### verification
+The phx_common_imm_gen module was verified using a self-checking directed testbench.
+
+Since the module is purely combinational, no clock or reset sequence is required. Each test applies an instruction and immediate type, waits for the combinational logic to settle, and compares the generated immediate against an independently specified expected value.
+
+The expected values were specified directly for each test case rather than reproducing the DUT's concatenation logic inside the testbench.
+
+The verification covered:
+
+I-type positive immediate
+I-type negative immediate
+I-type sign extension
+S-type positive immediate
+S-type negative immediate
+S-type bit reconstruction
+B-type zero offset
+B-type positive offset
+B-type negative offset
+B-type bit reconstruction
+U-type immediate generation
+U-type lower-bit zeroing
+J-type zero offset
+J-type positive offset
+J-type negative offset
+Invalid immediate type behavior
+Directed Test Result
+Total Tests : 14
+Passed      : 14
+Failed      : 0
+
+All directed tests passed successfully.
+
+The testbench also uses waveform dumping for GTKWave analysis.
+
+GTKWave verification was performed to inspect:
+
+Immediate type selection
+Instruction bit extraction
+Sign extension
+B-type and J-type bit reconstruction
+U-type zero extension
+Invalid-type behavior
+
+The module is considered verified after successful simulation and waveform inspection.
