@@ -16,7 +16,8 @@
 | COM-010 | `phx_common_priority_encoder` | `rtl/common/phx_common_priority_encoder.v` | `tb/common/phx_common_priority_encoder_tb.v` | Verified |
 | COM-011 | `phx_common_register_file` | `rtl/common/phx_common_register_fule.v` | `tb/common/phx_common_register_file_tb.v` | Verified |
 | COM-012 | `phx_common_imm_gen` | `rtl/common/phx_common_imm_gen.v` | `tb/common/phx_common_imm_gen.v` | Verified |
-| COM-012 | `phx_common_pc_target` | `rtl/common/phx_common_pc_target.v` | `tb/common/phx_common_pc_target_tb.v` | Verified |
+| COM-013 | `phx_common_pc_target` | `rtl/common/phx_common_pc_target.v` | `tb/common/phx_common_pc_target_tb.v` | Verified |
+| COM-013 | `phx_common_next_pc_mux` | `rtl/common/phx_common_next_pc_mux.v` | `tb/common/phx_common_next_pc_mux.v` | Verified |
 
 ## 2. Datapath Modules
 

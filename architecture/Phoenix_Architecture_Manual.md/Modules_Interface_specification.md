@@ -760,3 +760,85 @@ The `phx_common_pc_target` module was verified using a self-checking Verilog tes
 Directed Tests : 7
 Passed         : 7
 Failed         : 0
+```
+# COM-014 — Next PC Multiplexer
+
+## 1. Module Name
+
+`phx_common_next_pc_mux`
+
+---
+
+## 2. Purpose
+
+The `phx_common_next_pc_mux` module selects the address that will be used as the next Program Counter (PC) value.
+
+The module supports four possible next-PC sources:
+
+- Normal sequential address (`pc_plus_4`)
+- Branch target address (`branch_target`)
+- Jump target address (`jump_target`)
+- Alternate target address (`alternate_target`)
+
+The required input is selected using a 2-bit `select` signal.
+
+The functional behavior is:
+
+```text
+select = 2'b00 → next_pc = pc_plus_4
+select = 2'b01 → next_pc = branch_target
+select = 2'b10 → next_pc = jump_target
+select = 2'b11 → next_pc = alternate_target
+```
+## 3. Module Interface Specification
+
+### Port Specification
+
+| Port | Direction | Width | Description |
+|---|---|---:|---|
+| `pc_plus_4` | Input | 32 bits | Provides the normal sequential PC address, typically calculated as the current PC plus 4. |
+| `branch_target` | Input | 32 bits | Provides the target address for a taken branch instruction. |
+| `jump_target` | Input | 32 bits | Provides the target address for a jump instruction. |
+| `alternate_target` | Input | 32 bits | Provides an additional next-PC target for future control-flow operations. |
+| `select` | Input | 2 bits | Selects which input address is transferred to the output. |
+| `next_pc` | Output | 32 bits | Provides the selected address that will be used as the next Program Counter value. |
+
+### Selection Specification
+
+| `select` | Selected Source | `next_pc` |
+|---|---|---|
+| `2'b00` | `pc_plus_4` | `pc_plus_4` |
+| `2'b01` | `branch_target` | `branch_target` |
+| `2'b10` | `jump_target` | `jump_target` |
+| `2'b11` | `alternate_target` | `alternate_target` |
+
+### Interface Summary
+
+The module accepts four possible 32-bit next-PC address sources and uses the 2-bit `select` signal to choose one of them.
+
+The selected 32-bit address is provided through the `next_pc` output.
+
+The module does not require a clock, reset, or enable signal because it performs only combinational selection.
+
+## 5. Verification
+
+The `phx_common_next_pc_mux` module was verified using a self-checking Verilog testbench.
+
+### Directed Tests
+
+8 directed test cases were performed to verify all four selection paths of the multiplexer.
+
+The following conditions were tested:
+
+- `select = 2'b00` → `pc_plus_4`
+- `select = 2'b01` → `branch_target`
+- `select = 2'b10` → `jump_target`
+- `select = 2'b11` → `alternate_target`
+
+Different input values were applied to ensure that each selection path correctly produced the expected output.
+
+```text
+Directed Tests : 8
+Passed         : 8
+Failed         : 0
+```
