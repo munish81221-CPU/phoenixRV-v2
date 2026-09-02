@@ -991,3 +991,87 @@ Example:
 operand_a = 32'hFFFFFFFF
 operand_b = 32'h00000001
 ```
+
+# COM-017 — ALU Operand MUX
+
+## 1. Module Name
+
+`phx_common_alu_operand_mux`
+
+## 2. Purpose
+
+The `phx_common_alu_operand_mux` module selects the second operand for the Arithmetic Logic Unit (ALU).
+
+The module selects between a register operand and an immediate value based on the `select_immediate` control signal.
+
+The selection behavior is:
+
+```text
+select_immediate = 0 → alu_operand_b = register_operand
+
+select_immediate = 1 → alu_operand_b = immediate
+```
+
+## 3. Module Interface Specification
+
+### Port Interface Specification
+
+| Port Name | Direction | Width | Description |
+|---|---|---:|---|
+| `register_operand` | Input | 32-bit | Register operand provided as one possible source for the ALU second operand. |
+| `immediate` | Input | 32-bit | Immediate value provided as the alternative source for the ALU second operand. |
+| `select_immediate` | Input | 1-bit | Select control signal that determines which input is forwarded to the output. |
+| `alu_operand_b` | Output | 32-bit | Selected second operand provided to the ALU. |
+
+### Selection Behavior
+
+| `select_immediate` | `alu_operand_b` |
+|---|---|
+| `1'b0` | `register_operand` |
+| `1'b1` | `immediate` |
+
+## 4. RTL Behavior
+
+The `phx_common_alu_operand_mux` module is implemented as a purely combinational 2-to-1 multiplexer.
+
+The module uses the `select_immediate` control signal to select one of the two 32-bit input operands.
+
+When:
+
+```text
+select_immediate = 0
+```
+## 5. Verification
+
+The `phx_common_alu_operand_mux` module was verified using the testbench:
+
+`phx_common_alu_operand_mux_tb`
+
+The verification included directed tests and random tests.
+
+### Directed Tests
+
+Directed test cases verified both selection paths:
+
+- `select_immediate = 1'b0` correctly selects `register_operand`
+- `select_immediate = 1'b1` correctly selects `immediate`
+- Different 32-bit input values were used to clearly verify the selected output.
+
+### Random Tests
+
+Random values were applied to:
+
+- `register_operand`
+- `immediate`
+- `select_immediate`
+
+For each test, the expected output was determined according to the select signal and compared with the DUT output.
+
+### Simulation Results
+
+All directed and random test cases passed successfully.
+
+```text
+Total Passed : 104
+Total Failed : 0
+```
