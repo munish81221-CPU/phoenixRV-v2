@@ -22,6 +22,7 @@
 | COM-016 | `phx_common_branch_select` | `rtl/common/phx_common_branch_select.v` | `tb/common/phx_common_branch_select_tb.v` | Verified |
 | COM-017 | `phx_common_alu_operand_mux` | `rtl/common/phx_common_alu_operand_mux.v` | `tb/common/phx_common_alu_operand_mux_tb.v` | Verified |
 | COM-018 | `phx_common_writeback_mux` | `rtl/common/phx_common_writeback_mux.v` | `tb/common/phx_common_writeback_mux_tb.v` | Verified |
+| COM-019 | `phx_common_ALU` | `rtl/common/phx_common_ALU.v` | `tb/common/phx_common_ALU_tb.v` | Verified |
 
 ## 2. Datapath Modules
 
