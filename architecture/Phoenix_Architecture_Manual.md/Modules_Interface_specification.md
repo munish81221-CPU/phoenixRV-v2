@@ -1296,3 +1296,171 @@ Total Tests    : 1010
 Passed         : 1010
 Failed         : 0
 ```
+## 1. Module Name
+
+**Module:** `phx_datapath_register_file`
+
+**Module Category:** Datapath
+
+**Module ID:** REG-001
+## 2. Purpose
+
+The Register File is a fundamental storage element of the PhoenixRV datapath. It provides the CPU with a set of general-purpose registers used to store operands, intermediate results, and instruction data.
+
+The REG-001 Register File is designed as a parameterized, reusable module supporting:
+
+- Configurable register data width through `DATA_WIDTH`.
+- Configurable register address width through `ADDR_WIDTH`.
+- Two independent asynchronous read ports.
+- One synchronous write port.
+- Synchronous register write operation on the rising edge of `clk`.
+- Asynchronous register read operation.
+- Reset functionality to initialize all registers to zero.
+- Dedicated `x0` behavior, where register address zero always reads as zero and writes to it are ignored.
+
+For the default PhoenixRV configuration:
+
+- `DATA_WIDTH = 32`
+- `ADDR_WIDTH = 5`
+- Number of registers = `2^5 = 32`
+- Register width = 32 bits
+
+Thus, the default configuration implements a **32 × 32-bit register file**, consistent with the RV32 register organization used by PhoenixRV.
+## 3. Module Specification
+
+**Module:** `register_file`
+
+**Module ID:** REG-001
+
+**Category:** Datapath
+
+**Description:**  
+The Register File provides storage for the general-purpose registers of the PhoenixRV processor. It supports two independent asynchronous read ports and one synchronous write port.
+
+The module is parameterized to allow the register width and address width to be configured for different processor implementations.
+
+### Parameters
+
+| Parameter | Default Value | Description |
+|---|---:|---|
+| `DATA_WIDTH` | 32 | Width of each register in bits |
+| `ADDR_WIDTH` | 5 | Width of the register address |
+
+For the default configuration:
+
+- Number of registers = `2^ADDR_WIDTH = 32`
+- Width of each register = `DATA_WIDTH = 32` bits
+- Register organization = **32 × 32-bit**
+
+### Port Interface Specification
+
+| Port | Direction | Width | Description |
+|---|---|---:|---|
+| `clk` | Input | 1 bit | System clock used for synchronous register writes |
+| `reset` | Input | 1 bit | Resets all registers to zero |
+| `write_enable` | Input | 1 bit | Enables a register write operation |
+| `write_address` | Input | `ADDR_WIDTH` | Address of the register to be written |
+| `write_data` | Input | `DATA_WIDTH` | Data to be written into the selected register |
+| `read_address1` | Input | `ADDR_WIDTH` | Address for read port 1 |
+| `read_address2` | Input | `ADDR_WIDTH` | Address for read port 2 |
+| `read_data1` | Output | `DATA_WIDTH` | Data read from the register selected by `read_address1` |
+| `read_data2` | Output | `DATA_WIDTH` | Data read from the register selected by `read_address2` |
+
+### Register Organization
+
+The register storage is organized as:
+
+```text
+Number of Registers = 2^ADDR_WIDTH
+Register Width      = DATA_WIDTH
+```
+## 5. Verification
+
+The REG-001 Register File was verified using a self-checking Verilog testbench. Verification was performed using both directed tests and randomized testing, followed by waveform inspection in GTKWave.
+
+### Verification Methodology
+
+A reference register model was implemented inside the testbench:
+
+```text
+expected_registers[]
+```
+# COM-020 — ALU Operand-A MUX
+
+## 1. Module Name
+
+**Module:** `phx_datapath_operand_a_mux`  
+**Module ID:** COM-020  
+**Category:** Datapath  
+**RTL File:** `rtl/Datapath/phx_datapath_operand_a_mux.v`
+
+---
+
+## 2. Purpose
+
+The `phx_datapath_operand_a_mux` module selects the source of the first ALU operand.
+
+The ALU operand-A input can come from either:
+
+- `read_data1` — value read from the register file
+- `pc` — current program counter
+
+The selection is controlled by `alu_src_a`.
+
+This MUX is required because most instructions use a register value as ALU operand A, while instructions such as AUIPC require the current PC as the ALU operand.
+
+The module reuses the generic `phx_common_mux2` module from the Common layer.
+
+### Selection Behavior
+
+| `alu_src_a` | Selected Source | `operand_a` |
+|---:|---|---|
+| `0` | Register File | `read_data1` |
+| `1` | Program Counter | `pc` |
+
+---
+
+## 3. Module Interface Specification
+
+### Port Interface Specification
+
+| Port | Direction | Width | Description |
+|---|---|---:|---|
+| `read_data1` | Input | `WIDTH` | First read data from the register file |
+| `pc` | Input | `WIDTH` | Current program counter value |
+| `alu_src_a` | Input | 1 | Select signal for ALU operand A |
+| `operand_a` | Output | `WIDTH` | Selected first ALU operand |
+
+### Parameter Specification
+
+| Parameter | Default Value | Description |
+|---|---:|---|
+| `WIDTH` | `32` | Defines the width of the input and output datapath signals |
+
+## 5. Verification
+
+### Testbench
+
+**Testbench:** `tb/Datapath/phx_datapath_operand_a_mux_tb.v`
+
+A self-checking testbench was developed to verify the functionality of the ALU Operand-A MUX.
+
+The testbench calculates the expected output independently and compares it with the actual `operand_a` output using the `mux_check` task.
+
+### Directed Testing
+
+Six directed test cases were performed to verify both MUX selection conditions.
+
+The tests included:
+
+- Zero values
+- Maximum 32-bit value (`32'hFFFFFFFF`)
+- Alternating bit patterns (`32'hAAAAAAAA` and `32'h55555555`)
+- High-bit values
+- Typical PC-aligned values
+
+The following behavior was verified:
+
+```text
+alu_src_a = 0 → operand_a = read_data1
+alu_src_a = 1 → operand_a = pc
