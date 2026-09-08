@@ -24,11 +24,14 @@
 | COM-018 | `phx_common_writeback_mux` | `rtl/common/phx_common_writeback_mux.v` | `tb/common/phx_common_writeback_mux_tb.v` | Verified |
 | COM-019 | `phx_common_ALU` | `rtl/common/phx_common_ALU.v` | `tb/common/phx_common_ALU_tb.v` | Verified |
 
+
 ## 2. Datapath Modules
 
 | Module ID | Module | RTL Path | Testbench | Status |
 |-----------|--------|----------|-----------|--------|
-| DP-001 | — | — | — | Planned |
+| COM-001 | `phx_datapath_register_file` | `rtl/datapath/phx_datapath_register_file.v` | `tb/datapath/phx_datapath_register_file_tb.v` | Verified |
+| COM-002 | `phx_datapath_operand_a_mux` | `rtl/datapath/phx_datapath_operand_a_mux.v` | `tb/datapath/phx_datapath_operand_a_mux_tb.v` | Verified |
+
 
 ## 3. Control Modules
 
