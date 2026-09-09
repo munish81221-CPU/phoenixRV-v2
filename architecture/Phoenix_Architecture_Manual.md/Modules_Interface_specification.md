@@ -1464,3 +1464,33 @@ The following behavior was verified:
 ```text
 alu_src_a = 0 → operand_a = read_data1
 alu_src_a = 1 → operand_a = pc
+```
+
+# COM-021 — PC Target Adder
+
+## 1. Module Name
+
+**Module:** `phx_datapath_pc_target_adder`  
+**Category:** Datapath  
+**Module ID:** COM-021
+
+## 2. Purpose
+
+The PC Target Adder calculates a PC-relative target address by adding the current Program Counter (PC) value to a sign-extended immediate value.
+
+The module performs:
+
+```text
+Target = PC + Immediate
+```
+## 5. Verification
+
+### Verification Method
+
+The module was verified using a self-checking Verilog testbench.
+
+The testbench calculates the expected target address independently using:
+
+```verilog
+expected = test_pc + test_immediate;
+```
