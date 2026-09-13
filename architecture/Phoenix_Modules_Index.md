@@ -31,13 +31,16 @@
 |-----------|--------|----------|-----------|--------|
 | COM-001 | `phx_datapath_register_file` | `rtl/datapath/phx_datapath_register_file.v` | `tb/datapath/phx_datapath_register_file_tb.v` | Verified |
 | COM-002 | `phx_datapath_operand_a_mux` | `rtl/datapath/phx_datapath_operand_a_mux.v` | `tb/datapath/phx_datapath_operand_a_mux_tb.v` | Verified |
+| COM-003 | `phx_datapath_pc_target_adder` | `rtl/datapath/phx_datapath_pc_target_adder.v` | `tb/datapath/phx_datapath_pc_target_adder_tb.v` | Verified |
 
 
 ## 3. Control Modules
 
 | Module ID | Module | RTL Path | Testbench | Status |
 |-----------|--------|----------|-----------|--------|
-| CTRL-001 | — | — | — | Planned |
+| COM-001 | `phx_control_control_unit` | `rtl/control/phx_control_control_unit.v` | `tb/control/phx_control_control_unit_tb.v` | Verified |
+| COM-001 | `phx_control_alu_decoder` | `rtl/control/phx_control_alu_decoder.v` | `tb/control/phx_control_alu_decoder_tb.v` | Verified |
+
 
 ## 4. Memory Modules
 
