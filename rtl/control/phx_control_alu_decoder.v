@@ -30,45 +30,45 @@ always_comb begin
         R_type:begin
             case({funct7,funct3})
                 //ADD	
-                0000000000:begin
+                10'b0000000000:begin
                     alu_control=4'b0000;
                 end
                 //SUB
-                0100000000:begin
+                10'b0100000000:begin
                     alu_control=4'b0001;
                 end
                 //AND
-                0000000111:begin
+                10'b0000000111:begin
                     alu_control=4'b0010;
                 end
 
                 //OR
-                0000000110:begin
+                10'b0000000110:begin
                     alu_control=4'b0011;
                 end
 
                 //XOR	
-                0000000100:begin
+                10'b0000000100:begin
                     alu_control=4'b0100;
                 end
                 //SLL	
-                0000000001:begin	
+                10'b0000000001:begin	
                     alu_control=4'b0101;
                 end
                 //SRL	
-                0000000101:begin	
+                10'b0000000101:begin	
                     alu_control=4'b0110;
                 end
                 //SRA	
-                0100000101:begin	
+                10'b0100000101:begin	
                     alu_control=4'b0111;
                 end
                 //SLT	
-                0000000010:begin	
+                10'b0000000010:begin	
                     alu_control=4'b1000;
                 end
                 //SLTU	
-                0000000011:begin
+                10'b0000000011:begin
                     alu_control=4'b1001;
                 end
                 
