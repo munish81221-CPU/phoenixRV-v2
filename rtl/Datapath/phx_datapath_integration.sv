@@ -48,7 +48,6 @@ logic [31:0] jump_target;
 logic [31:0] jalr_target;
 logic [31:0] next_pc;
 
-logic [31:0] writeback_data_internal;
 
 logic [2:0] branch_select;
 
