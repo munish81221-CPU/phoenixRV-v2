@@ -14,7 +14,9 @@ module phx_single_cycle_core_tb;
 
 
     // Temporary Instruction Memory
-    logic [31:0] program_memory [0:63];
+    localparam int PROGRAM_DEPTH = 80;
+
+    logic [31:0] program_memory [0:PROGRAM_DEPTH-1];
 
     
     // RISC-V Instruction Encoders
@@ -142,7 +144,7 @@ integer instructions_executed;
     always #5 clk = ~clk;
 
     // Temporary Instruction Memory
-    assign instruction = program_memory[current_pc[7:2]];
+    assign instruction = program_memory[current_pc[8:2]];
 
     localparam logic [6:0] OPCODE_R_TYPE = 7'b0110011;
     localparam logic [6:0] OPCODE_I_TYPE = 7'b0010011;
@@ -244,9 +246,8 @@ initial begin
         $dumpvars(0, phx_single_cycle_core_tb);
 
 
-        for (i = 0; i < 64; i = i + 1)
-            program_memory[i] = 32'h00000013;
-
+        for (i = 0; i < PROGRAM_DEPTH; i = i + 1)
+         program_memory[i] = 32'h00000013;
         
         program_memory[0] = encode_i_type(
             12'd10,
@@ -524,6 +525,174 @@ program_memory[41] = encode_i_type(
     12'd88, 5'd0, 3'b000, 5'd29, OPCODE_I_TYPE
 );
 
+
+// Index 42: SLL x31, x1, x2
+program_memory[42] = encode_r_type(
+    7'b0000000, 5'd2, 5'd1,
+    3'b001, 5'd31, OPCODE_R_TYPE
+);
+
+// Index 43: SRL x31, x16, x1
+program_memory[43] = encode_r_type(
+    7'b0000000, 5'd1, 5'd16,
+    3'b101, 5'd31, OPCODE_R_TYPE
+);
+
+// Index 44: SRA x31, x16, x1
+program_memory[44] = encode_r_type(
+    7'b0100000, 5'd1, 5'd16,
+    3'b101, 5'd31, OPCODE_R_TYPE
+);
+
+// Index 45: SLT x31, x16, x2
+program_memory[45] = encode_r_type(
+    7'b0000000, 5'd2, 5'd16,
+    3'b010, 5'd31, OPCODE_R_TYPE
+);
+
+// Index 46: SLTU x31, x16, x2
+program_memory[46] = encode_r_type(
+    7'b0000000, 5'd2, 5'd16,
+    3'b011, 5'd31, OPCODE_R_TYPE
+);
+
+// Index 47: SLT x31, x2, x16
+program_memory[47] = encode_r_type(
+    7'b0000000, 5'd16, 5'd2,
+    3'b010, 5'd31, OPCODE_R_TYPE
+);
+
+// Index 48: SLTU x31, x2, x16
+program_memory[48] = encode_r_type(
+    7'b0000000, 5'd16, 5'd2,
+    3'b011, 5'd31, OPCODE_R_TYPE
+);
+
+
+
+//  Register x0 corner-case verification
+
+
+// Index 49: Attempt to write 123 into x0
+// Expected: x0 remains zero.
+program_memory[49] = encode_i_type(
+    12'd123, 5'd0, 3'b000, 5'd0, OPCODE_I_TYPE
+);
+
+// Index 50: Read x0 and write the result to x31.
+// Expected: x31 = 5.
+program_memory[50] = encode_i_type(
+    12'd5, 5'd0, 3'b000, 5'd31, OPCODE_I_TYPE
+);
+
+// Index 51: Attempt to write x1 + x2 into x0.
+// x1 = 10 and x2 = 20, so the attempted result is 30.
+program_memory[51] = encode_r_type(
+    7'b0000000, 5'd2, 5'd1,
+    3'b000, 5'd0, OPCODE_R_TYPE
+);
+
+// Index 52: Read x0 again.
+// Expected: x30 = 7.
+program_memory[52] = encode_i_type(
+    12'd7, 5'd0, 3'b000, 5'd30, OPCODE_I_TYPE
+);
+
+// Index 53: Attempt to load a memory value into x0.
+// Address 4 contains 30 from our earlier store.
+program_memory[53] = encode_i_type(
+    12'd4, 5'd0, 3'b010, 5'd0, OPCODE_LOAD
+);
+
+// Index 54: Verify that x0 still reads as zero.
+// Expected: x29 = 9.
+program_memory[54] = encode_i_type(
+    12'd9, 5'd0, 3'b000, 5'd29, OPCODE_I_TYPE
+);
+
+
+
+//  Integrated Load/Store Corner Cases
+
+
+// Index 55: Store x1 = 10 at byte address 8 (memory word 2)
+program_memory[55] = encode_s_type(
+    12'd8, 5'd1, 5'd0, 3'b010, OPCODE_STORE
+);
+
+// Index 56: Store x2 = 20 at byte address 12 (memory word 3)
+program_memory[56] = encode_s_type(
+    12'd12, 5'd2, 5'd0, 3'b010, OPCODE_STORE
+);
+
+// Index 57: Load memory word 2 into x9
+program_memory[57] = encode_i_type(
+    12'd8, 5'd0, 3'b010, 5'd9, OPCODE_LOAD
+);
+
+// Index 58: Load memory word 3 into x10
+program_memory[58] = encode_i_type(
+    12'd12, 5'd0, 3'b010, 5'd10, OPCODE_LOAD
+);
+
+// Index 59: Store x16 = 0xFFFFFFFF at byte address 16
+program_memory[59] = encode_s_type(
+    12'd16, 5'd16, 5'd0, 3'b010, OPCODE_STORE
+);
+
+// Index 60: Load memory word 4 into x11
+program_memory[60] = encode_i_type(
+    12'd16, 5'd0, 3'b010, 5'd11, OPCODE_LOAD
+);
+
+// Index 61: Store x3 = 30 at the last valid word address, 1020
+program_memory[61] = encode_s_type(
+    12'd1020, 5'd3, 5'd0, 3'b010, OPCODE_STORE
+);
+
+// Index 62: Load the last valid word into x12
+program_memory[62] = encode_i_type(
+    12'd1020, 5'd0, 3'b010, 5'd12, OPCODE_LOAD
+);
+
+// Index 63: Reload byte address 8 into x13
+program_memory[63] = encode_i_type(
+    12'd8, 5'd0, 3'b010, 5'd13, OPCODE_LOAD
+);
+
+// Index 64: Overwrite memory word 2 with x2 = 20
+program_memory[64] = encode_s_type(
+    12'd8, 5'd2, 5'd0, 3'b010, OPCODE_STORE
+);
+
+// Index 65: Read the overwritten value into x14
+program_memory[65] = encode_i_type(
+    12'd8, 5'd0, 3'b010, 5'd14, OPCODE_LOAD
+);
+
+// Index 66: Read memory word 3 again into x15
+program_memory[66] = encode_i_type(
+    12'd12, 5'd0, 3'b010, 5'd15, OPCODE_LOAD
+);
+
+// Index 67: Read memory word 4 again into x17
+program_memory[67] = encode_i_type(
+    12'd16, 5'd0, 3'b010, 5'd17, OPCODE_LOAD
+);
+
+// Index 68: Read the last valid word again into x18
+program_memory[68] = encode_i_type(
+    12'd1020, 5'd0, 3'b010, 5'd18, OPCODE_LOAD
+);
+
+
+
+
+
+
+
+
+
         clk   = 1'b0;
         reset = 1'b1;
 
@@ -548,6 +717,145 @@ program_memory[41] = encode_i_type(
                 
 
         end
+
+ //  JALR verification
+        check_register(26, 32'd164);
+        check_register(27, 32'd156);
+        check_register(28, 32'd0);
+        check_register(30, 32'd0);
+        check_register(29, 32'd88);
+
+       
+//  Check each ALU result immediately
+
+
+repeat (7) begin
+    @(posedge clk);
+
+    instructions_executed = instructions_executed + 1;
+
+    #1;
+
+    $display(
+        "ALU Test | Step=%0d | PC=%0d | Instruction=%08h",
+        instructions_executed,
+        current_pc,
+        instruction
+    );
+
+    case (current_pc)
+
+        // Index 42 executed; PC advances to 172.
+        32'd172:
+            check_register(31, 32'h00A00000);
+
+        // Index 43 executed; PC advances to 176.
+        32'd176:
+            check_register(31, 32'h003FFFFF);
+
+        // Index 44 executed; PC advances to 180.
+        32'd180:
+            check_register(31, 32'hFFFFFFFF);
+
+        // Index 45 executed; PC advances to 184.
+        32'd184:
+            check_register(31, 32'd1);
+
+        // Index 46 executed; PC advances to 188.
+        32'd188:
+            check_register(31, 32'd0);
+
+        // Index 47 executed; PC advances to 192.
+        32'd192:
+            check_register(31, 32'd0);
+
+        // Index 48 executed; PC advances to 196.
+        32'd196:
+            check_register(31, 32'd1);
+
+        default: begin
+            $display(
+                "[ERROR] Unexpected PC during CORE-001G: %0d",
+                current_pc
+            );
+
+            checks_failed = checks_failed + 1;
+        end
+
+    endcase
+end
+
+
+
+//  Verify x0 remains zero
+
+
+repeat (6) begin
+
+    @(posedge clk);
+
+    instructions_executed = instructions_executed + 1;
+
+    #1;
+
+    case (current_pc)
+
+        // Instruction 49 has executed.
+        32'd200: begin
+            check_register(0, 32'd0);
+        end
+
+        // Instruction 50 has executed.
+        32'd204: begin
+            check_register(31, 32'd5);
+            check_register(0, 32'd0);
+        end
+
+        // Instruction 51 has executed.
+        32'd208: begin
+            check_register(0, 32'd0);
+        end
+
+        // Instruction 52 has executed.
+        32'd212: begin
+            check_register(30, 32'd7);
+            check_register(0, 32'd0);
+        end
+
+        // Instruction 53 has executed.
+        32'd216: begin
+            check_register(0, 32'd0);
+        end
+
+        // Instruction 54 has executed.
+        32'd220: begin
+            check_register(29, 32'd9);
+            check_register(0, 32'd0);
+        end
+
+        default: begin
+            $display(
+                "[ERROR] Unexpected PC during CORE-001H: %0d",
+                current_pc
+            );
+
+            checks_failed = checks_failed + 1;
+        end
+
+    endcase
+
+end
+
+
+
+
+
+
+
+
+
+
+
 
 
         check_register(1, 32'd10);
@@ -593,16 +901,219 @@ program_memory[41] = encode_i_type(
         check_register(24, 32'd0);
         check_register(25, 32'd77);
 
-        //  JALR verification
-        check_register(26, 32'd164);
-        check_register(27, 32'd156);
-        check_register(28, 32'd0);
-        check_register(30, 32'd0);
-        check_register(29, 32'd88);
+
+
+        // These checks must occur before CORE-001J executes.
+        check_register(0,  32'd0);
+        check_register(29, 32'd9);
+        check_register(30, 32'd7);
+        check_register(31, 32'd5);
+            
+       check_pc(32'd220);
+
+
+       // Execute 14 load/store corner-case instructions
+
+repeat (14) begin
+    @(posedge clk);
+    instructions_executed = instructions_executed + 1;
+
+    // Allow sequential updates to settle.
+    #1;
+
+    $display(
+        "Step=%0d | PC=%0d (0x%08h) | Instruction=%08h",
+        instructions_executed,
+        current_pc,
+        current_pc,
+        instruction
+    );
+end
 
 
 
-        check_pc(32'd168);
+// Register checks
+
+check_register(9,  32'd10);         // Loaded from word 2 before overwrite
+check_register(10, 32'd20);         // Loaded from word 3
+check_register(11, 32'hFFFFFFFF);   // Loaded from word 4
+check_register(12, 32'd30);         // Loaded from last valid word
+check_register(13, 32'd10);         // Reloaded word 2 before overwrite
+check_register(14, 32'd20);         // Word 2 after overwrite
+check_register(15, 32'd20);         // Word 3 remains unchanged
+check_register(17, 32'hFFFFFFFF);   // Word 4 retains its value
+check_register(18, 32'd30);         // Last word retains its value
+
+// Data-memory checks
+// Arguments: word index, expected 32-bit value
+
+check_memory(1,   32'd30);          // Existing data remains intact
+check_memory(2,   32'd20);          // Updated word 2
+check_memory(3,   32'd20);          // Independent word 3
+check_memory(4,   32'hFFFFFFFF);    // Word 4
+check_memory(255, 32'd30);          // Last valid word
+
+// Program-counter check
+
+
+
+
+
+                    check_pc(32'd276);
+
+
+
+
+
+        
+
+
+
+
+
+// Integrated CPU Reset Verification
+
+
+
+//  Assert reset between clock edges.
+//
+// At this point, the previous program has finished and
+// current_pc is expected to be 220.
+//
+// Register-file reset is asynchronous.
+// PC reset is synchronous.
+
+
+$display("");
+$display("================================================");
+$display(" CORE-001I: Integrated CPU Reset Verification");
+$display("================================================");
+
+// Wait for the falling edge so that reset is asserted
+// between rising clock edges.
+@(negedge clk);
+
+reset = 1'b1;
+
+// Allow asynchronous register-file reset updates to settle.
+#1;
+
+$display("");
+$display("CORE-001I-1: Reset asserted between clock edges");
+
+// The PC uses synchronous reset.
+// Therefore, it should still hold its previous value.
+check_pc(32'd276);
+
+// Previously written register values should be cleared.
+check_register(1, 32'd0);
+check_register(2, 32'd0);
+check_register(3, 32'd0);
+check_register(8, 32'd0);
+check_register(16, 32'd0);
+check_register(31, 32'd0);
+
+
+
+//  Keep reset active through the rising edge.
+//
+// The PC should now reset to zero.
+// The register file should remain cleared.
+
+
+@(posedge clk);
+#1;
+
+$display("");
+$display("CORE-001I-2: Reset held through rising clock edge");
+
+check_pc(32'd0);
+
+check_register(1, 32'd0);
+check_register(2, 32'd0);
+check_register(3, 32'd0);
+check_register(8, 32'd0);
+check_register(16, 32'd0);
+check_register(31, 32'd0);
+
+
+
+//  Release reset and execute instruction 0.
+//
+// Instruction:
+//     addi x1, x0, 10
+//
+// Expected after this instruction:
+//     x1 = 10
+//     x2 = 0
+//     PC = 4
+
+
+@(negedge clk);
+
+reset = 1'b0;
+
+@(posedge clk);
+
+instructions_executed = instructions_executed + 1;
+
+#1;
+
+$display("");
+$display("CORE-001I-3: First instruction after reset");
+
+$display(
+    "Step=%0d | PC=%0d (0x%08h) | Instruction=%08h",
+    instructions_executed,
+    current_pc,
+    current_pc,
+    instruction
+);
+
+check_pc(32'd4);
+
+check_register(1, 32'd10);
+check_register(2, 32'd0);
+
+
+
+// Execute instruction 1.
+// Instruction:
+//     addi x2, x0, 20
+// Expected after this instruction:
+//     x1 = 10
+//     x2 = 20
+//     PC = 8
+
+
+@(posedge clk);
+
+instructions_executed = instructions_executed + 1;
+
+#1;
+
+$display("");
+$display("CORE-001I-4: Second instruction after reset");
+
+$display(
+    "Step=%0d | PC=%0d (0x%08h) | Instruction=%08h",
+    instructions_executed,
+    current_pc,
+    current_pc,
+    instruction
+);
+
+check_pc(32'd8);
+
+check_register(1, 32'd10);
+check_register(2, 32'd20);
+
+$display("");
+$display("CORE-001I reset verification sequence completed.");
+$display("");
+
+
+
 
 
 
