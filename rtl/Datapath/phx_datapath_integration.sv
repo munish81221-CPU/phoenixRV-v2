@@ -165,6 +165,7 @@ phx_common_data_memory #(
 
     .mem_read(mem_read),
     .mem_write(mem_write),
+    .access_funct3(instruction[14:12]),
 
     .address(alu_result),
     .write_data(read_data2),

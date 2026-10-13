@@ -47,22 +47,30 @@ always @(*) begin
             wb_select = 2'b00;
         end
 
-        // Load Word (LW)
+        // RV32I loads: LB, LH, LW, LBU, LHU.
+        // funct3 validity is enforced here; data memory handles width/sign.
         7'b0000011: begin
-            reg_write = 1'b1;
-            alu_src_a = 1'b0;
-            alu_src   = 1'b1;
-            mem_read  = 1'b1;
-            wb_select = 2'b01;
+            case (instruction[14:12])
+                3'b000, 3'b001, 3'b010, 3'b100, 3'b101: begin
+                    reg_write = 1'b1;
+                    alu_src_a = 1'b0;
+                    alu_src   = 1'b1;
+                    mem_read  = 1'b1;
+                    wb_select = 2'b01;
+                end
+                default: ;
+            endcase
         end
 
-        // Store Word (SW)
+        // RV32I stores: SB, SH, SW.
         7'b0100011: begin
-            reg_write = 1'b0;
-            alu_src_a = 1'b0;
-            alu_src   = 1'b1;
-            mem_write = 1'b1;
-            wb_select = 2'b00;
+            case (instruction[14:12])
+                3'b000, 3'b001, 3'b010: begin
+                    alu_src  = 1'b1;
+                    mem_write = 1'b1;
+                end
+                default: ;
+            endcase
         end
 
         // Conditional Branch
